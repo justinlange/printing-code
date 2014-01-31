@@ -14,8 +14,6 @@ void ofApp::setup(){
     font.loadFont("frabk.ttf", 24, true, false, true);
     
     
-
-    
 }
 
 //--------------------------------------------------------------
@@ -58,19 +56,27 @@ void ofApp::draw(){
         rectCorner = triPtB;
         ofPoint offset;
         offset.set(triangleWidth / scoopComplexity * scoopSkip, 0);
+        ofSetColor(180);
+        ofTriangle(triPtA, triPtB, triPtC);
         for(int k=0; k < scoopComplexity; k+=scoopSkip){
+            rectCorner+=offset/2;
+
             ofSetColor(255, 255, 255);
             
             //cout << rectCorner << endl;
-            short int cutoutDist = triangleHeight/10;
-            for(int l=0; l<2; l++){
-                ofRect(rectCorner, triangleWidth/scoopComplexity, triangleWidth*coneComplexity/2);
+            short int cutoutDist = triangleHeight/30;
+            short int coneHeight = triangleWidth*coneComplexity/2;
+            
+            for(int m=0; m<2; m++){
+                int mHeight = (m * coneHeight) + (m * cutoutDist);
+                int mYpos =  (m * cutoutDist); //(l * coneHeight) +
+                ofRect(rectCorner.x, rectCorner.y - mYpos, triangleWidth/scoopComplexity, coneHeight - mHeight );
+                cout << m << endl;
             }
-            rectCorner+=offset;
+            rectCorner+=offset/2;
             
         }
-        ofSetColor(180);
-        ofTriangle(triPtA, triPtB, triPtC);
+
         
     }
     
