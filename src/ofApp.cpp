@@ -24,16 +24,16 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    //ofFill();
-    //ofSetColor(255, 100, 100);
-    
-    coneComplexity  =       8;
-    scoopComplexity =       8;
+    if( oneShot ){
+        ofBeginSaveScreenAsPDF("screenshot-"+ofGetTimestampString()+".pdf", false);
+    }
+
+    coneComplexity  =       6;
+    scoopComplexity =       6;
     scoopSkip       =       3;
     
-    triangleHeight  =     ofGetHeight()/5;
+    triangleHeight  =     280;
     triangleWidth = triangleHeight/coneComplexity*2;
-    
     
     screenMidpoint.set(ofGetWidth()/2, ofGetHeight()/2);
     //screenMidpoint.set(500,200);
@@ -41,23 +41,42 @@ void ofApp::draw(){
     triPtB.set(triPtA.x - triangleWidth/2, triPtA.y +triangleHeight);
     triPtC.set(triPtA.x + triangleWidth/2, triPtA.y + triangleHeight);
     
-    //cout << triPtA << triPtB << triPtC << endl;
-    
-    //ofNoFill();
+    ofNoFill();
     ofSetLineWidth(2);
     ofSetColor(180);
-    ofEllipse(triPtA, triangleHeight/3, triangleHeight/3);
+    //ofEllipse(triPtA, triangleHeight/3, triangleHeight/3);
+    
+    //float angleToRotate = getAngle(triPtA.x, triPtA.y)/(ofGetMouseY()/50);
+    //float angleToRotate = ofGetMouseY()/10;
+    float angleToRotate = 19;
+    
+    cout << "angleToRotate: " << angleToRotate << "   mouseX: " << ofGetMouseX() << "    mouseY: " << ofGetMouseY() << endl;
+    
+    ofTranslate(triPtA);
+    ofRotate(-angleToRotate);
+    ofTranslate(-triPtA);
+    
+    ofTranslate(screenMidpoint.x, -screenMidpoint.y*.5);
     
     for(unsigned int j = 0; j < coneComplexity; j++){
         ofTranslate(triPtA);
-        ofRotate(360/coneComplexity);
+
+        
+        //fuck, triganometry... I need to get the angle from the length of the two sides of the triangle
+        
+        ofRotate(angleToRotate);
+        //ofRotate(((triangleWidth * coneComplexity) * (2 * PI * triangleHeight)) / coneComplexity   );
         ofTranslate(-triPtA);
         ofPoint rectCorner;
         rectCorner = triPtB;
         ofPoint offset;
         offset.set(triangleWidth / scoopComplexity * scoopSkip, 0);
         ofSetColor(180);
+        
+        
         ofTriangle(triPtA, triPtB, triPtC);
+        
+       
         for(int k=0; k < scoopComplexity; k+=scoopSkip){
             rectCorner+=offset/2;
 
@@ -65,14 +84,19 @@ void ofApp::draw(){
             
             //cout << rectCorner << endl;
             short int cutoutDist = triangleHeight/30;
+            short int cutoutHeight = triangleHeight/80;
             short int coneHeight = triangleWidth*coneComplexity/2;
             
+            ofFill();
+            ofSetColor(255);
+            
             for(int m=0; m<2; m++){
-                int mHeight = (m * coneHeight) + (m * cutoutDist);
+                int mHeight = (m * coneHeight) + (m * cutoutHeight);
                 int mYpos =  (m * cutoutDist); //(l * coneHeight) +
                 ofRect(rectCorner.x, rectCorner.y - mYpos, triangleWidth/scoopComplexity, coneHeight - mHeight );
-                cout << m << endl;
+                //cout << m << endl;
             }
+            ofNoFill();
             rectCorner+=offset/2;
             
         }
@@ -81,19 +105,12 @@ void ofApp::draw(){
     }
     
     
-    
-    
-    
-    
-    
-    if( oneShot ){
-        ofBeginSaveScreenAsPDF("screenshot-"+ofGetTimestampString()+".pdf", false);
-    }
+
     
     if( oneShot ){
         ofEndSaveScreenAsPDF();
         oneShot = false;
-    }
+    };
     
     /*
      
@@ -187,6 +204,31 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
             break;
         }
     }
+}
+
+float ofApp::getAngle(float _x, float _y) {
+	if (_x == 0.0) {
+		if(_y < 0.0)
+			return 270;
+		else
+			return 90;
+	} else if (_y == 0) {
+		if(_x < 0)
+			return 180;
+		else
+			return 0;
+	}
+    
+	if ( _y > 0.0)
+		if (_x > 0.0)
+			return atan(_y/_x) * GRAD_PI;
+		else
+			return 180.0 - (atan(_y/-_x) * GRAD_PI);
+		else
+			if (_x > 0.0)
+				return 360.0 - (atan(-_y/_x) * GRAD_PI);
+			else
+				return 180.0 + (atan(-_y/-_x) * GRAD_PI);
 }
 
 

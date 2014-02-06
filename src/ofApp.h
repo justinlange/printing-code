@@ -1,6 +1,9 @@
 #pragma once
 
+#define GRAD_PI 180.000/PI
+
 #include "ofMain.h"
+#include "ofMath.h"
 
 class ofApp : public ofBaseApp{
     
@@ -18,6 +21,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
+    float getAngle(float _x, float _y);
     
     vector <ofImage> frames;
     ofVideoGrabber grabber;
